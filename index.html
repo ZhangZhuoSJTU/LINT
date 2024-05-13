@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>LLM Interrogation</title>
+
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta property="og:image" content="https://llm-interrogation.info/img/logo.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://llm-interrogation.info/"/>
+    <meta property="og:title" content="On Large Language Models' Resilience to Coercive Interrogation" />
+    <meta property="og:description" content="Large Language Models (LLMs) are increasingly employed in numerous applications. It is hence important to ensure that their ethical standard aligns with humans'. However, existing jail-breaking efforts show that such alignment could be compromised by well crafted prompts. In this paper, we disclose a new threat to LLMs alignment when a malicious actor has access to model output logits, such as in all open-source LLMs and many commercial LLMs that provide the needed APIs (e.g., some GPT versions). It does not require crafting any prompt. Instead, it leverages the observation that even when an LLM declines a toxic query, the harmful response is concealed deep within the output logits. We can coerce the model to disclose it by forcefully using low-ranked output tokens during auto-regressive output generation, and such forcing is only needed in a very small number of selected output positions. We call it model interrogation. Since our method operates differently from jail-breaking, it has better effectiveness than state-of-the-art jail-breaking techniques (92% versus 62%) and is 10 to 20 times faster. The toxic content elicit by our method is also of better quality. More importantly, it is complementary to jail-breaking, and a synergetic integration of the two exhibits superior performance over individual methods. We also find that with interrogation, toxic knowledge can even be extracted from models customized for coding tasks."/>
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="On Large Language Models' Resilience to Coercive Interrogation" />
+    <meta name="twitter:description" content="Large Language Models (LLMs) are increasingly employed in numerous applications. It is hence important to ensure that their ethical standard aligns with humans'. However, existing jail-breaking efforts show that such alignment could be compromised by well crafted prompts. In this paper, we disclose a new threat to LLMs alignment when a malicious actor has access to model output logits, such as in all open-source LLMs and many commercial LLMs that provide the needed APIs (e.g., some GPT versions). It does not require crafting any prompt. Instead, it leverages the observation that even when an LLM declines a toxic query, the harmful response is concealed deep within the output logits. We can coerce the model to disclose it by forcefully using low-ranked output tokens during auto-regressive output generation, and such forcing is only needed in a very small number of selected output positions. We call it model interrogation. Since our method operates differently from jail-breaking, it has better effectiveness than state-of-the-art jail-breaking techniques (92% versus 62%) and is 10 to 20 times faster. The toxic content elicit by our method is also of better quality. More importantly, it is complementary to jail-breaking, and a synergetic integration of the two exhibits superior performance over individual methods. We also find that with interrogation, toxic knowledge can even be extracted from models customized for coding tasks."/>
+    <meta name="twitter:image" content="https://llm-interrogation.info/img/log.png" />
+
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕵️‍♂️</text></svg>">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.css">
+    <link rel="stylesheet" href="css/app.css">
+	<link rel="stylesheet" href="css/fontawesome.all.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.3/clipboard.min.js"></script>
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+	<script defer src="js/fontawesome.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+    <script src="js/app.js"></script>
+</head>
+
+<body style="padding: 1%; width: 100%">
+    <div class="container-lg text-center" style="max-width: 1500px; margin: auto;" id="main">
+        <div class="row">
+            <h2 class="col-md-12 text-center">
+                On Large Language Models’ Resilience to Coercive Interrogation (S&P'24)</br> 
+            </h2>
+        </div>
+        <div class="row text-center">
+        <div class="col-md-3"></div>
+        <div class="col-md-6 text-center">
+            <ul class="list-inline">
+                <li>
+                    <a href="https://zzhang.xyz/">
+                        Zhuo Zhang
+                    </a>
+                </li>
+                <li>
+                    <a href="https://sites.google.com/view/guangyushen/home">
+                        Guangyu Shen
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.cs.purdue.edu/homes/taog/">
+                        Guanhong Tao
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.cs.purdue.edu/homes/cheng535/">
+                        Siyuan Cheng
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.cs.purdue.edu/homes/xyzhang/">
+                        Xiangyu Zhang
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-3"></div>
+            <div class="col-md-12 text-center">
+                The Department of Computer Science, Purdue University
+            </div>
+            <br>
+        </div>
+        <br>
+
+        <div class="row text-center">
+			<span class="link-block">
+                <a href="https://github.com/ZhangZhuoSJTU/LINT/blob/master/docs/lint.pdf"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </span>
+                   <span>Paper</span>
+                </a>
+                <a href="https://github.com/ZhangZhuoSJTU/LINT"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                        <i class="fab fa-github"></i>
+                    </span>
+                    <span>Github</span>
+                </a>
+            </span>
+		</div>
+
+        <br>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h4>
+                    <b>
+                        <font color="#118ab2">Attackers can</font> <font color="#ef486e">"jailbreak"</font> <font color="#118ab2">LLMs by</font> <font color="#ef486e">strategically selecting</font> <font color="#118ab2">output tokens in a few places.</font>
+                    </b>
+                </h4>
+                <img src="img/story.gif" style="max-width: 1000px; min-width: 300px; width: 55%; height: auto;"/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Abstract
+                </h3>
+                <p class="text-justify">
+                    Large Language Models (LLMs) are increasingly employed in numerous applications. It is hence important to ensure that their ethical standard aligns with humans'. However, existing jail-breaking efforts show that such alignment could be compromised by well crafted prompts. In this paper, we disclose a new threat to LLMs alignment when a malicious actor has access to model output logits, such as in all open-source LLMs and many commercial LLMs that provide the needed APIs (e.g., some GPT versions). It does not require crafting any prompt. Instead, it leverages the observation that even when an LLM declines a toxic query, the harmful response is concealed deep within the output logits. We can coerce the model to disclose it by forcefully using low-ranked output tokens during auto-regressive output generation, and such forcing is only needed in a very small number of selected output positions. We call it model interrogation. Since our method operates differently from jail-breaking, it has better effectiveness than state-of-the-art jail-breaking techniques (92% versus 62%) and is 10 to 20 times faster. The toxic content elicit by our method is also of better quality. More importantly, it is complementary to jail-breaking, and a synergetic integration of the two exhibits superior performance over individual methods. We also find that with interrogation, toxic knowledge can even be extracted from models customized for coding tasks.
+                </p>
+            </div>
+        </div>
+        <br>
+        
+    	<div class="row">
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <h3>
+                        How LLMs are Interrogated to Reveal Harmful Content
+                    </h3>
+                    <h5> 
+                        <b>
+                            <font color="#ff0000">
+                                The following contains model-generated content that can be offensive in nature and uncomfortable to the audiences.
+                            </font>
+                        </b>
+                    </h5>
+                    <br>
+
+                    <div class="text-center ">
+                        <ul class="nav nav-pills center-pills">
+                            <li class="method-pill active" data-value="harassment"
+                                onclick="showGif('img/harassment.gif'); selectGif(this, activeScenePill)"><a>Harassment</a></li>
+                            <li class="method-pill" data-value="hata-speech"
+                                onclick="showGif('img/hate-speech.gif'); selectGif(this, activeScenePill)"><a>Hate Speech</a></li>
+                            <li class="method-pill" data-value="sexually-explicit"
+                                onclick="showGif('img/sexually-explicit.gif'); selectGif(this, activeScenePill)"><a>Sexually Explicit</a></li>
+                            <li class="method-pill" data-value="dangerous"
+                                onclick="showGif('img/dangerous.gif'); selectGif(this, activeScenePill)"><a>Dangerous</a></li>
+                        </ul>
+                    </div>
+
+                    <script>
+                        activeMethodPill = document.querySelector('.method-pill.active-pill');
+                        activeScenePill = document.querySelector('.scene-pill.active-pill');
+                        activeModePill = document.querySelector('.mode-pill.active-pill');
+                    </script>
+
+                    <br>
+                    <br>
+                    <div class="col-md-8 col-md-offset-2">
+                        <img id="displayedGif" src="img/harassment.gif" style="max-width: 1000px; min-width: 300px; width: 85%; height: auto;"/>
+                    </div>
+
+                    <script>
+                        function showGif(gifSrc) {
+                            const gif = document.getElementById('displayedGif');
+                            gif.src = gifSrc;
+                        }
+                    </script>
+                </div>
+            </div>
+            <br>
+            <br>
+
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <h3>
+                        Our Thoughts
+                    </h3>
+                    <p class="text-justify">
+                        <b>Moderation for Interrogation.</b> In our experiments, the LLMs demonstrate different levels of resistance to various toxic questions, suggesting that alignment training could make a difference in resistance. However, our results also highlight the ability of LINT to bypass the safeguards of all these LLMs, regardless of the extent of their moderation. In other words, as long as the LLM has learned the toxic content, it is hidden somewhere that can be extracted by forces. Hence, an open-source model or a model with top-k hard-label information is extremely dangerous and can be easily exploited for maicious purposes, which necessitates additional moderation measures to address such threats. Solutions might include completely removing toxic content during training through machine unlearning or deliberately obfuscating the toxic knowledge to induce intentional hallucinations in response to toxic inquiries.
+                    </p>
+                    <p class="text-justify">
+                        <b>Interrogation as Metrics.</b> As indicated by the success of black-box jail-breaking techniques, even disallowing white-box or top-k hard-label access does not prevent the model from being exploited. In those cases, our method could be used to measure the level of resistance during in-house alignment training. For example, if the LLM can demonstrate substantial resistance during interrogation, it is less likely to be exploited by black-box attacks. We believe that adopting such fine-grained metrics could significantly enhance the existing alignment training paradigm.
+                    </p>
+                    <p class="text-justify">
+                        <b>Applications beyond Breaking Safety Alignment.</b> We recognize the potential of extending interrogation beyond security-related applications. For example, interrogation could be utilized for hallucination detection by examining numerous forcefully generated outputs. Moreover, a <a href="https://arxiv.org/abs/2402.10200">recent study</a> by Google DeepMind successfully employed a similar approach to enhance chain-of-thought reasoning.
+                    </p>
+                </div>
+            </div>
+            <br>
+
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <h3>
+                        Citation
+                    </h3>
+                    <div class="form-group col-md-10 col-md-offset-1">
+    				  <p class="text-justify">
+                        <textarea id="bibtex" class="form-control" readonly>
+    @inproceedings{zhang2024large,
+        title={On large language models’ resilience to coercive interrogation},
+        author={Zhang, Zhuo and Shen, Guangyu and Tao, Guanhong and Cheng, Siyuan and Zhang, Xiangyu},
+        booktitle={2024 IEEE Symposium on Security and Privacy (SP)},
+        pages={252--252},
+        year={2024},
+        organization={IEEE Computer Society}
+    }</textarea></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <h3>
+                        Ethics and Disclosure
+                    </h3>
+                    <p class="text-justify">
+                    This research — including the methodology described in the paper, the code, and the content of this web page — contains material that can allow users to generate harmful content from some public LLMs. Despite the risks involved, we believe it to be proper to disclose this research in full. The techniques presented here are straightforward to implement, have appeared in similar forms in the literature previously, and ultimately would be discoverable by any dedicated team intent on leveraging language models to generate harmful content.
+                    </p>
+
+                    <p class="text-justify">
+                    Indeed, several (manual) "jailbreaks" of existing LLMs are already widely disseminated so the direct incremental harm that can be caused by releasing our attacks is relatively small for the time being. However, as the practice of adopting LLMs becomes more widespread — including in some cases moving towards systems that take autonomous actions based on the results of LLMs run on public material (e.g. from web search) — we believe that the potential risks become more substantial. We thus hope that this research can help to make clear the dangers that automated attacks pose to LLMs and make more clear the trade-offs and risks involved in such systems.
+                    </p>
+                </div>
+            </div>
+
+            <br>
+            <br>
+            <br>
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <p class="text-justify">
+                        The website template was borrowed from <a href="https://reconfusion.github.io/">ReconFusion</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
