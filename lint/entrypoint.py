@@ -91,7 +91,7 @@ def parse_args():
         help="The number of sorted next-sentence candiates (by entailment score) we are going to check",
     )
 
-    parser.add_argument("--manual", action="store_true", help="Mannually do the search")
+    parser.add_argument("--manual", action="store_true", help="Mannually do the interrogation")
 
     parser.add_argument(
         "--overwrite", action="store_true", help="Overwrite existing results"
