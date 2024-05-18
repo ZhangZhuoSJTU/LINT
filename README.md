@@ -1,9 +1,12 @@
-# On Large Language Models’ Resilience to Coercive Interrogation<img src="imgs/logo.png" alt="Logo" align="right" width="72"/>
+# LINT: Large Language Model Interrogation<img src="imgs/logo.png" alt="Logo" align="left" width="105"/> <a href="docs/lint.pdf"> <img title="paper" src="imgs/paper.png" alt="loading-ag-167" align="right" width="250"></a>
 
-<p>
-<a href="docs/stochfuzz.pdf"> <img title="" src="imgs/paper.png" alt="loading-ag-167" align="right" width="220"></a>
-This repository contains the code used in the research paper titled "[On Large Language Models’ Resilience to Coercive Interrogation](https://www.computer.org/csdl/proceedings-article/sp/2024/313000a252/1WPcZ9B0jCg)".
 
+![Python 3.9](https://img.shields.io/badge/python-3.9-DodgerBlue.svg?style=plastic)
+![License MIT](https://img.shields.io/badge/License-MIT-DodgerBlue.svg?style=plastic)
+
+<p> 
+This repository contains the code used in the research paper titled "<a href="https://www.computer.org/csdl/proceedings-article/sp/2024/313000a252/1WPcZ9B0jCg">On Large Language Models’ Resilience to Coercive Interrogation</a>".
+    
 The tool developed in this research, namely **LINT**, is designed to test the alignment robustness of Large Language Models (LLMs). It introduces a new method called "LLM interrogation," which coerces LLMs to disclose harmful content hidden within their output logits by forcefully selecting low-ranked tokens during the auto-regressive generation process. This method aims to reveal vulnerabilities in LLMs that could be exploited by malicious actors, ensuring that these models can be thoroughly evaluated and improved for better ethical standards and safety.
 </p>
 
@@ -11,6 +14,7 @@ The tool developed in this research, namely **LINT**, is designed to test the al
 
 - [Installation](#installation)
 - [Usage](#usage)
+- [Clarification](#clarification)
 - [Contributing](#contributing)
 - [License](#license)
 - [Cite](#cite)
@@ -89,7 +93,9 @@ You can configure various parameters of the interrogation method by checking the
 
 ## Clarification
 
-It is worth noting that this repository is under active development. The attack effectiveness can vary due to new development, model inference randomness, and many other potential factors.
+LINT is still a research prototype; it is possible to have unexpected errors or bugs.
+
+Also, note that this repository is under active development. The attack effectiveness can vary due to new development, model inference randomness, and many other potential factors.
 
 ## Contributing
 
