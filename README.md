@@ -122,7 +122,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Cite
 
-If you are using our dataset for an academic publication, we would really appreciate a citation to the following work:
+If you are using our technique for an academic publication, we would really appreciate a citation to the following work:
 
 ```
 @inproceedings{zhang2024large,
