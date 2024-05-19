@@ -30,7 +30,7 @@ def parse_args():
             "codellama-python",
             "codellama-instruct",
         ],
-        help="The LLM we are going to attack",
+        help="the LLM we are going to attack",
     )
 
     parser.add_argument(
@@ -46,82 +46,86 @@ def parse_args():
             "vicuna",
             "mistral",
         ],
-        help="The LLM we are going to use as an evaluator",
+        help="the LLM we are going to use as an evaluator",
     )
 
     parser.add_argument(
         "--entailment-force-depth",
         type=int,
         default=1,
-        help="The depth we are going to use entailment to force the model",
+        help="the depth we are going to use entailment to force the model",
     )
 
     parser.add_argument(
         "--magic-prompt",
         type=str,
         default="none",
-        help="The magic prompt we are going to use, none means no magic prompt",
+        help="the magic prompt we are going to use, `none` means no magic prompt (default is `none`)",
     )
 
     parser.add_argument(
         "--batch-size",
         type=int,
         default=100,
-        help="The batch size of each inference round",
+        help="the batch size of each inference round",
     )
 
     parser.add_argument(
         "--searching-max-token-n",
         type=int,
         default=200,
-        help="The max token number each interrogation result can have",
+        help="the max token number each interrogation result can have",
     )
 
     parser.add_argument(
         "--searching-topk",
         type=int,
         default=500,
-        help="The top-k candidates we are considering",
+        help="the top-k candidates we are considering",
     )
 
     parser.add_argument(
         "--searching-check-n",
         type=int,
         default=20,
-        help="The number of sorted next-sentence candiates (by entailment score) we are going to check",
+        help="the number of sorted next-sentence candiates (by entailment score) we are going to check",
     )
 
-    parser.add_argument("--manual", action="store_true", help="Mannually do the interrogation")
+    parser.add_argument(
+        "--manual",
+        action="store_true",
+        help="performing the interrogation process manually",
+    )
 
     parser.add_argument(
-        "--overwrite", action="store_true", help="Overwrite existing results"
+        "--overwrite", action="store_true", help="overwriting existing results"
     )
 
     parser.add_argument(
         "--input",
         type=str,
         default="stdin",
-        help="The input file we are going to use, stdin means standard input",
+        help="the input file we are going to use, `stdin` means standard input (default is `stdin`)",
     )
 
     parser.add_argument(
         "--no-interception",
         action="store_true",
-        help="do not intercept the model generation",
+        help="no interception during the model generation",
     )
 
     parser.add_argument(
         "--target-n",
         type=int,
         default=5,
-        help="The number of targets we are going to search",
+        help="the number of interrogated results we are going to search",
     )
 
     parser.add_argument(
         "--data-dir",
         type=str,
         default=".",
-        help="The directory of the data we are going to use",
+        help="the directory of the data we are going to use",
     )
 
     parser.add_argument(
@@ -129,7 +133,7 @@ def parse_args():
         type=str,
         default="entailment",
         choices=["entailment", "gptfuzzer"],
-        help="The ranking classifier we are going to use",
+        help="the ranking classifier we are going to use",
     )
 
     args = parser.parse_args()
