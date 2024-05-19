@@ -56,7 +56,7 @@ We provide a CLI tool, `lint`, to directly run the interrogation.
     Interrogate LLMs for our own purpose.
 
     optional arguments:
-      -h, --help            show this help message and exit
+      -h, --help            Showing this help message and exit
       --model {llama2-7b,llama2-13b,llama2-70b,yi,vicuna,mistral,codellama-python,codellama-instruct}
                             The LLM we are going to attack
       --eval-model {none,self,llama2-7b,llama2-13b,llama2-70b,vicuna,mistral}
