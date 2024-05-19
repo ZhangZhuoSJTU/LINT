@@ -60,6 +60,11 @@ def prepare_logger(data_dir, model, magic_prompt):
     return logger
 
 
+def is_contiguous_subsequence(subseq, seq):
+    n = len(subseq)
+    return any(subseq == seq[i : i + n] for i in range(len(seq) - n + 1))
+
+
 def load_model(name, interception=True):
     if name in MODEL_PATHS:
         path = MODEL_PATHS[name]

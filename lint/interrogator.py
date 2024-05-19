@@ -1,6 +1,6 @@
 from .constants import TERMINAL_PUNCTUATION, EVALUATION_PROMPT
 from .clause_checker import NaiveChecker
-from .utils import construct_prompt
+from .utils import construct_prompt, is_contiguous_subsequence
 
 from dataclasses import dataclass
 from transformers import pipeline
@@ -358,13 +358,16 @@ class Interrogator:
 
         return clauses
 
-    def __evaluate(self, eval_idss):
+    def __evaluate(self, eval_idss, check_danger=True):
         start_time = datetime.datetime.now()
         self.logger.debug(f"Start evaluation: {len(eval_idss)}")
 
         if self.eval_tokenizer is None:
             # we do not have an evaluator
-            return None if len(eval_idss) == 0 else eval_idss[0]
+            if check_danger:
+                return None if len(eval_idss) == 0 else eval_idss[0]
+            else:
+                return None
 
         eval_ss = list(map(lambda ids: self.tokenizer.decode(ids), eval_idss))
         prompt_ss = list(
@@ -377,7 +380,9 @@ class Interrogator:
         )
 
         for eval_s in eval_ss:
-            self.logger.debug(f"Evaluating: {repr(eval_s)}")
+            self.logger.debug(
+                f"Evaluating ({'danger' if check_danger else 'safe'}): {repr(eval_s)}"
+            )
 
         prompt_idss = self.eval_tokenizer(prompt_ss)["input_ids"]
 
@@ -390,15 +395,33 @@ class Interrogator:
 
         for i, output_s in enumerate(output_ss):
             self.logger.debug(
-                f"Evaluation result: {repr(output_s)} --> {repr(eval_ss[i])}"
+                f"Evaluation result ({'danger' if check_danger else 'safe'}): "
+                f"{repr(output_s)} --> {repr(eval_ss[i])}"
             )
             # some stupid models may add spaces or lower case
-            if any(
-                k in "".join(output_s.upper().split())
-                for k in EVALUATION_PROMPT[self.eval_model.model_name]["pos_indicator"]
-            ):
-                self.logger.debug(f"Evaluation successed: {repr(eval_ss[i])}")
-                return eval_idss[i]
+
+            if check_danger:
+                if any(
+                    k in "".join(output_s.upper().split())
+                    for k in EVALUATION_PROMPT[self.eval_model.model_name][
+                        "pos_indicator"
+                    ]
+                ):
+                    self.logger.debug(
+                        f"Evaluation successed (danger): {repr(eval_ss[i])}"
+                    )
+                    return eval_idss[i]
+            else:
+                if any(
+                    k in "".join(output_s.upper().split())
+                    for k in EVALUATION_PROMPT[self.eval_model.model_name][
+                        "neg_indicator"
+                    ]
+                ):
+                    self.logger.debug(
+                        f"Evaluation successed (safe): {repr(eval_ss[i])}"
+                    )
+                    return eval_idss[i]
 
         return None
 
@@ -630,10 +653,37 @@ class Interrogator:
             if len(eval_idss) == 0:
                 continue
 
-            # prepare the evaluation sentences
-            ext_input_ids = self.__evaluate(eval_idss[-1::-1])
+            # evaluate
+            ext_input_ids = self.__evaluate(eval_idss[-1::-1], check_danger=True)
             if ext_input_ids is None:
                 continue
+
+            # let's do backward evaluation
+            eval_idss = []
+            for j in range(
+                len(input_ids[self.__instruction_token_n :]), len(ext_input_ids)
+            ):
+                if len(eval_idss) == 0:
+                    # enfore at least one check
+                    eval_idss.append(ext_input_ids[j:])
+                    continue
+
+                token = ext_input_ids[j]
+                token_s = self.tokenizer.decode([token])
+                if self.__terminate_fn(token_s):
+                    eval_idss.append(ext_input_ids[j + 1 :])
+
+            safe_input_ids = self.__evaluate(eval_idss, check_danger=False)
+
+            if safe_input_ids is None:
+                pass
+            elif len(safe_input_ids) + len(
+                input_ids[self.__instruction_token_n :]
+            ) == len(ext_input_ids):
+                # we failed
+                continue
+            else:
+                ext_input_ids = ext_input_ids[: -len(safe_input_ids)]
 
             new_input_ids = input_ids[: self.__instruction_token_n] + ext_input_ids
 
@@ -642,8 +692,7 @@ class Interrogator:
         self.__schema.pop()
         return
 
-    @staticmethod
-    def __interrogation_search_manual(clauses, n):
+    def __interrogation_search_manual(self, clauses, n):
         while True:
             for i, clause in enumerate(clauses[:n]):
                 print(
@@ -684,16 +733,24 @@ class Interrogator:
 
             yield (i, clauses[i])
 
-    @staticmethod
-    def __interrogation_search_auto(clauses, n):
+    def __interrogation_search_auto(self, clauses, n):
         for i, clause in enumerate(clauses[:n]):
-            # let's first try to pick the first token
+            yield (i, clause)
+
+            # let' try to pick the first token, if there will be interception
+            if not self.interception:
+                continue
+
+            for k in self.model.interception_map.keys():
+                k = k.tolist()
+                if is_contiguous_subsequence(k, clause.tokens):
+                    break
+            else:
+                continue
+
             new_clause = copy.deepcopy(clause)
             new_clause.tokens = new_clause.tokens[:1]
             yield (i, new_clause)
-
-            # then we try to pick the whole clause
-            yield (i, clause)
 
     @staticmethod
     def __get_force_n(schema):

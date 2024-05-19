@@ -197,7 +197,7 @@ def main():
             interrogator.interrogate(behavior, user_prompt)
 
     else:
-        behaviors = list(json.load(os.path.join(args.data_dir, args.input)).keys())
+        behaviors = list(json.load(args.input).keys())
         behaviors.sort()
 
         for behavior in behaviors:
