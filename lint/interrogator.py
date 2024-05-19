@@ -574,8 +574,7 @@ class Interrogator:
 
             self.logger.debug(f"Clause ({depth}.{i}): {repr(clause.string)}")
 
-            # let's only append the first token of the selected clause
-            new_input_ids = input_ids + clause.tokens[0:1]
+            new_input_ids = input_ids + clause.tokens
 
             # magic shortcut of the additional token
             if self.searching_max_token_n + self.__instruction_token_n < len(
@@ -688,6 +687,12 @@ class Interrogator:
     @staticmethod
     def __interrogation_search_auto(clauses, n):
         for i, clause in enumerate(clauses[:n]):
+            # let's first try to pick the first token
+            new_clause = copy.deepcopy(clause)
+            new_clause.tokens = new_clause.tokens[:1]
+            yield (i, new_clause)
+
+            # then we try to pick the whole clause
             yield (i, clause)
 
     @staticmethod
