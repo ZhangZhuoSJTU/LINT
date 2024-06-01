@@ -5,7 +5,7 @@
 ![License MIT](https://img.shields.io/badge/License-MIT-DodgerBlue.svg?style=plastic)
 
 <p> 
-This repository contains the code used in the research paper titled "<a href="https://www.computer.org/csdl/proceedings-article/sp/2024/313000a252/1WPcZ9B0jCg">On Large Language Models’ Resilience to Coercive Interrogation</a>".
+This repository contains the minimal implementation for the research paper titled "<a href="https://www.computer.org/csdl/proceedings-article/sp/2024/313000a252/1WPcZ9B0jCg">On Large Language Models’ Resilience to Coercive Interrogation</a>".
     
 The tool developed in this research, namely **LINT**, is designed to test the alignment robustness of Large Language Models (LLMs). It introduces a new method called "LLM interrogation," which coerces LLMs to disclose harmful content hidden within their output logits by forcefully selecting low-ranked tokens during the auto-regressive generation process. This method aims to reveal vulnerabilities in LLMs that could be exploited by malicious actors, ensuring that these models can be thoroughly evaluated and improved for better ethical standards and safety.
 </p>
