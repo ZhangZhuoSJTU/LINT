@@ -166,3 +166,5 @@ log/
 *.json
 *.pkl
 *.log
+
+.DS_Store
